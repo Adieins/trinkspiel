@@ -1,31 +1,46 @@
 name: Build Kivy Android APK
+
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - name: Install Buildozer dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
-          pip install buildozer cython virtualenv
-      - name: Build APK
-        run: |
-          buildozer init || true
-          echo "ANDROIDSDK = /opt/android-sdk" >> buildozer.spec
-          echo "ANDROIDNDK = /opt/android-ndk" >> buildozer.spec
-          buildozer android debug
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: trinkspiel-apk
-          path: bin/*.apk
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y unzip wget openjdk-11-jdk
+        python -m pip install --upgrade pip
+        pip install cython buildozer
+
+    - name: Install Android SDK & Build-Tools
+      run: |
+        export ANDROID_HOME=$HOME/Android
+        mkdir -p $ANDROID_HOME/cmdline-tools
+        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+        unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+        yes | $ANDROID_HOME/cmdline-tools/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+    - name: Build APK
+      run: |
+        export ANDROIDSDK=$HOME/Android
+        export ANDROIDNDK=$HOME/.buildozer/android/platform/android-ndk-r25b
+        buildozer android debug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: trinkspiel-apk
+        path: bin/*.apk
