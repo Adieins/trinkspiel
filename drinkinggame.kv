@@ -1,0 +1,71 @@
+<GameScreen>:
+    orientation: "vertical"
+    padding: 20
+    spacing: 15
+
+    # Hintergrundfarbe für den Screen
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1   # Weiß
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    # Titel
+    Label:
+        text: "🍻 Trinkspiel"
+        font_size: 36
+        size_hint_y: 0.1
+        halign: "center"
+        valign: "middle"
+        color: 0, 0, 0, 1   # Schwarz
+        text_size: self.size
+
+    # Eingabefeld für Spielernamen
+    TextInput:
+        id: player_input
+        hint_text: "Spielernamen durch Komma getrennt eingeben..."
+        multiline: False
+        size_hint_y: 0.1
+        padding: 10
+        background_color: 0.95, 0.95, 0.95, 1
+        foreground_color: 0, 0, 0, 1
+
+    # Start-Button
+    Button:
+        text: "🎲 Spiel starten"
+        size_hint_y: 0.1
+        background_color: 0.2, 0.6, 0.9, 1   # Blau
+        color: 1, 1, 1, 1   # Weiße Schrift
+        bold: True
+        on_press: root.start_game()
+        radius: [20,]
+
+    # Scrollbarer Bereich für Aufgaben
+    ScrollView:
+        size_hint_y: 0.5
+        do_scroll_x: False
+
+        Label:
+            id: task_label
+            text: "Noch kein Spiel gestartet"
+            font_size: 22
+            halign: "center"
+            valign: "top"
+            text_size: self.width, None
+            size_hint_y: None
+            height: self.texture_size[1]
+            padding: 10, 10
+            color: 0, 0, 0, 1   # Schwarz für Kontrast
+
+    # Button für nächste Aufgabe
+    Button:
+        id: next_button
+        text: "➡️ Nächste Aufgabe"
+        size_hint_y: 0.1
+        background_color: 0.9, 0.3, 0.3, 1   # Rot
+        color: 1, 1, 1, 1   # Weiße Schrift
+        bold: True
+        on_press: root.show_next_task()
+        disabled: True
+        radius: [20,]
